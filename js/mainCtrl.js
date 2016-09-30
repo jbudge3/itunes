@@ -2,13 +2,19 @@ angular.module('itunes').controller('mainCtrl', function($scope, itunesService){
   //This is setting up the default behavior of our ng-grid. The important thing to note is
   //the 'data' property. The value is 'songData'. That means ng-grid is looking for songData on $scope and is putting whatever songData is into the grid.
   //this means when you make your iTunes request, you'll need to get back the information, parse it accordingly, then set it to songData on the scope -> $scope.songData = ...
-  $scope.gridOptions = { 
+  $scope.filterOptions = {
+        filterText: ''
+      };
+
+  $scope.gridOptions = {
       data: 'songData',
+      filterOptions: $scope.filterOptions,
       height: '110px',
       sortInfo: {fields: ['Song', 'Artist', 'Collection', 'Type'], directions: ['asc']},
       columnDefs: [
         {field: 'Play', displayName: 'Play', width: '40px', cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()"><a href="{{row.getProperty(col.field)}}"><img src="http://www.icty.org/x/image/Miscellaneous/play_icon30x30.png"></a></div>'},
         {field: 'Artist', displayName: 'Artist'},
+        {field: 'SongName', displayName: 'Song'},
         {field: 'Collection', displayName: 'Collection'},
         {field: 'AlbumArt', displayName: 'Album Art', width: '110px', cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()"><img src="{{row.getProperty(col.field)}}"></div>'},
         {field: 'Type', displayName: 'Type'},
@@ -26,9 +32,14 @@ angular.module('itunes').controller('mainCtrl', function($scope, itunesService){
   //Now write a function that will call the method on the itunesService that is responsible for getting the data from iTunes, whenever the user clicks the submit button
   //*remember, that method should be expecting an artist name. The artist name is coming from the input box on index.html, head over there and check if that input box is tied to any specific model we could use.
   //Also note that that method should be retuning a promise, so you could use .then in this function.
-    
-    //Code here
 
+    //Code here
+    $scope.getSongData = function() {
+      itunesService.getArtistJson($scope.artist)
+        .then(function(response) {
+          $scope.songData = response;
+        })
+    }
 
   //Check that the above method is working by entering a name into the input field on your web app, and then console.log the result
 
@@ -54,7 +65,3 @@ angular.module('itunes').controller('mainCtrl', function($scope, itunesService){
 
     //Code here
 });
-
-
-
-
